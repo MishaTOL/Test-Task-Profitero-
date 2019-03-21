@@ -5,7 +5,7 @@ require 'csv'
 def GetProductLinks(url)
   result = []
   xpathToProductLink = '//div[@class="product-container"]/div/div/a/@href'
-  page = 10;
+  page = 1;
   html = nil;
 
   loop do
