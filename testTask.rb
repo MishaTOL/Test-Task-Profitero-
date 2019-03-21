@@ -5,7 +5,7 @@ require 'csv'
 def GetProductLinks(url)
   result = []
   xpathToProductLink = '//div[@class="product-container"]/div/div/a/@href'
-  page = 1;
+  page = 10;
   html = nil;
 
   loop do
@@ -17,12 +17,13 @@ def GetProductLinks(url)
       html = GetHtml(targetUrl)
     end
 
-    puts "Page №#{page}"
-
     links = html.xpath(xpathToProductLink)
-    puts (links.size.to_s + " link on that page")
-    links.each do |link|
-      result.push(link)
+    if(links.size != 0)
+      puts "Page №#{page}"
+      puts (links.size.to_s + " links on that page")
+      links.each do |link|
+        result.push(link)
+      end
     end
 
     page += 1
@@ -74,7 +75,7 @@ def GetProduct(url)
 
     return product
   rescue
-    puts "Ther's a problem with #{url}"
+    puts "Ther's a problem with #{url.to_s}"
   end
 end
 
@@ -99,17 +100,20 @@ end
 def Main(url, file)
   puts "Script started"
   productLinks = GetProductLinks(url)
-  wroteProducts = 0
+  currentProduct = 0
 
   productLinks.each do |link|
     begin
+      currentProduct += 1
+      puts "Product #{currentProduct} / #{productLinks.length}"
       product = GetProduct(link)
-      puts "Get Product - success"
-      WriteProduct(file, product)
-      puts "Write Product - success"
-
-      wroteProducts += 1
-      puts "Wrote #{wroteProducts} / #{productLinks.length}"
+      if(product != nil)
+        puts "Get Product - success"
+        WriteProduct(file, product)
+        puts "Write Product - success"
+      else
+        puts "Can't find the product. Probably 404 error."
+      end
     end
   end
   puts "Finished"
